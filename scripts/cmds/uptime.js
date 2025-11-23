@@ -21,7 +21,7 @@ module.exports = {
     name: "uptime",
     aliases: ["up", "upt", "ut"],
     version: "4.0-premium",
-    author: "𝗕𝗔𝗗𝗛𝗢𝗡 𝗥𝗢𝗛𝗠𝗔𝗡 💀✨",
+    author: "PS MARUF GAMING  💀✨",
     role: 0,
     shortDescription: {
       en: "Premium Uptime & System Stats"
