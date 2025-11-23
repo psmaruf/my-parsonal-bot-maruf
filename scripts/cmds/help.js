@@ -21,7 +21,7 @@ module.exports = {
 
     if (args.length === 0) {
       const categories = {};
-      let msg = `╭━━━  -ღ´🦋𝗠𝗲𝗹𝗶𝘀𝗮🍒🥂  ━━━╮\n` +
+      let msg = `╭━━━  PS MARUF GAMING   ━━━╮\n` +
                 `┃ 🔰 Total Commands: ${commands.size}\n` +
                 `┃ 📥 Use: ${prefix}help [command]\n` +
                 `╰━━━━━━━━━━━━━━━━━━━━━━╯\n\n`;
