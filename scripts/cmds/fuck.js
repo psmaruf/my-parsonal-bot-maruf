@@ -1,50 +1,78 @@
-const axios = require('axios');
-const jimp = require("jimp");
-const fs = require("fs")
-
+const fs = require("fs-extra");
+const Canvas = require("canvas");
 
 module.exports = {
- config: {
- name: "fuck",
- aliases: ["chikai","cdn"],
- version: "1.0",
- author: "MR.AYAN",
- countDown: 5,
- role: 0,
- shortDescription: "",
- longDescription: "",
- category: "18+",
- guide: "{pn}"
- },
+  config: {
+    name: "fuck",
+    aliases: ["fuckv2", "chuda"],
+    version: "1.0.3",
+    author: "Badhon", //do not change anything otherwise you got banned
+    countDown: 5,
+    role: 2,
+    shortDescription: "Fuck edit with template",
+    longDescription: "Put user profile pictures exactly on placeholders in background",
+    category: "funny",
+    guide: "{pn} @tag"
+  },
+
+  onStart: async function ({ event, api }) {
+    try {
+      const id1 = event.senderID;
+      const mentions = Object.keys(event.mentions || {});
+      const id2 = mentions[0];
+      if (!id2) {
+        return api.sendMessage("❌ | Please mention someone!", event.threadID, event.messageID);
+      }
+
+      const avatar1 = await Canvas.loadImage(
+        `https://graph.facebook.com/${id1}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`
+      );
+      const avatar2 = await Canvas.loadImage(
+        `https://graph.facebook.com/${id2}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`
+      );
+
+      const background = await Canvas.loadImage(
+        "https://drive.google.com/uc?export=view&id=1-St_iO7eEDBPxIfpnmR4cT9BaBhnkDP9"
+      );
+
+      const canvas = Canvas.createCanvas(background.width, background.height);
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+      const left = { x: 190, y: 200, size: 180 };  
+      const right = { x: 390, y: 200, size: 180 }; 
 
 
+      function drawCircle(img, x, y, size) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, x, y, size, size);
+        ctx.restore();
+      }
+      drawCircle(avatar1, left.x, left.y, left.size);
+      drawCircle(avatar2, right.x, right.y, right.size);
+      const path = __dirname + "/cache/fuck.png";
+      const out = fs.createWriteStream(path);
+      const stream = canvas.createPNGStream();
+      stream.pipe(out);
 
- onStart: async function ({ message, event, args }) {
- const mention = Object.keys(event.mentions);
- if (mention.length == 0) return message.reply("Please mention someone");
- else if (mention.length == 1) {
- const one = event.senderID, two = mention[0];
- bal(one, two).then(ptth => { message.reply({ body: "💦𝗢𝗙𝗦𝗦 𝗧𝗛𝗜𝗦 𝗜𝗦 𝗙𝗢𝗥 𝗬𝗢𝗨💦", attachment: fs.createReadStream(ptth) }) })
- } else {
- const one = mention[1], two = mention[0];
- bal(one, two).then(ptth => { message.reply({ body: "", attachment: fs.createReadStream(ptth) }) })
- }
- }
-
-
+      out.on("finish", () => {
+        api.sendMessage(
+          {
+            body: "উফফফ!! মারুফ আরো জোরে 🥵🥵",
+            attachment: fs.createReadStream(path),
+          },
+          event.threadID,
+          () => fs.unlinkSync(path),
+          event.messageID
+        );
+      });
+    } catch (err) {
+      console.error(err);
+      api.sendMessage("❌ | Something went wrong!", event.threadID, event.messageID);
+    }
+  },
 };
-
-async function bal(one, two) {
-
- let avone = await jimp.read(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)
- avone.circle()
- let avtwo = await jimp.read(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)
- avtwo.circle()
- let pth = "fucked.png"
- let img = await jimp.read("https://i.ibb.co/YpR7Bpv/image.jpg")
-
- img.resize(639,  480).composite(avone.resize(90, 90), 23, 320).composite(avtwo.resize(100, 100), 110, 60);
-
- await img.writeAsync(pth)
- return pth
-  }
